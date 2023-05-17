@@ -1,0 +1,332 @@
+package veterinaria_gui;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JCheckBox;
+
+
+
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+
+
+public class ventana extends JFrame{
+
+
+    public JPanel panelBprincipales;
+    public JPanel panelBotones;
+
+    public JPanel panel_crear_perro;
+    public JPanel panel_crear_gato;
+
+    public JPanel panelLogin;
+    public JPanel panelMesas;
+    public JPanel listaCompras;
+
+
+    //CrearMesas manejoM = new CrearMesas();
+
+    JButton botonMesas = new JButton();
+    JButton botonVend = new JButton();
+    JButton usuarios  = new JButton();
+    JButton botonLogin = new JButton();
+
+    
+    public ventana(){  //Creamos el constructor y dentro de este creamos el JFrame
+
+        setTitle("Veterinaria");
+        setSize(700, 450);
+        setLocationRelativeTo(null);  
+        
+        iniciarComponentes();
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
+    }    
+
+//============================================================================
+    private void iniciarComponentes(){
+        iniciarPaneles();
+        iniciarBotones();
+        crearPanelPerro();
+        crearPanelgato();
+
+        
+    }
+//============================================================================
+    private void iniciarPaneles(){
+        panelBprincipales = new JPanel();
+        panelBprincipales.setLayout(null);//desactivamos el layout por defecto que esta centrado
+        panelBprincipales.setBackground(Color.WHITE);
+        // establecemos el color del panel
+        panelBprincipales.setSize(300, 600);
+        this.getContentPane().add(panelBprincipales);//agregamos el panel a la ventana
+
+        //panel donde se agregan los botones principales
+        panelBotones = new JPanel();
+        panelBotones.setLayout(null);
+        panelBotones.setSize(150, 600);
+        panelBotones.setBackground(new Color(30, 136, 229));
+
+        panelBprincipales.add(panelBotones);
+      
+        
+    }
+
+    private void iniciarBotones(){
+        botonLogin.setText("Crear perro");
+        botonLogin.setBounds(20, 20, 100, 30);
+        botonLogin.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               //llamamos el metodo que creamos para el panel
+                mostrar_crear_perro();
+            }
+        });
+        panelBotones.add(botonLogin);
+
+
+        
+        botonMesas.setText("Crear Gato");
+        botonMesas.setBounds(20, 60, 100, 30);
+        botonMesas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               //llamamos el metodo que creamos para el panel
+                mostrar_crear_gatos();
+            }
+        });
+        panelBotones.add(botonMesas);
+
+
+        
+        botonVend.setText("proximamente");
+        botonVend.setBounds(20, 100, 100, 30);
+        botonVend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               //llamamos el metodo que creamos para el panel    
+            }
+        });
+        panelBotones.add(botonVend);
+
+        
+        
+        usuarios .setText("Proximamente 2");
+        usuarios .setBounds(20, 140, 100, 30);
+        //panelBotones.add(usuarios);
+
+        
+       //creamos el boton cerrar y configuramos su funcionamiento
+        JButton botonCe = new JButton();
+        botonCe.setText("Cerrar");
+        botonCe.setBounds(20, 180, 100, 30);
+
+       
+        botonCe.addActionListener(new ActionListener() {  //agregamos el addAcionlistener al boton para que al precionarlo funcione
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int respuesta = JOptionPane.showConfirmDialog(null, "desea salir de la APP", "SALIR", JOptionPane.YES_NO_OPTION);
+                if(respuesta == JOptionPane.YES_OPTION){ //creamos el bucle que se encarga de evaluar la desicion de usiario
+                    System.exit(0);
+                }
+                
+            }
+            
+        });
+
+        panelBotones.add(botonCe);
+ 
+    }
+
+//============================================================================
+
+    public void crearPanelPerro() {
+        // Crear un panel
+        panel_crear_perro = new JPanel();
+
+        // Crear los componentes del panel
+        JLabel titulo = new JLabel("Agregar perro");
+
+        // Cambiar la fuente del título a Arial negrita de 18 puntos
+        titulo.setFont(new Font("Arial", Font.BOLD, 18));
+
+        JLabel nombreLabel = new JLabel("Nombre:");
+        JTextField nombreField = new JTextField(10);
+        JLabel vacunasLabel = new JLabel("Vacunado:");
+        JCheckBox vacunasCheck = new JCheckBox();
+        JLabel costoLabel = new JLabel("Costo:");
+        JTextField costoField = new JTextField(10);
+        JLabel paisLabel = new JLabel("Pais:");
+        JTextField paisField = new JTextField(10);
+        JLabel razaLabel = new JLabel("Raza:");
+        JTextField razaField = new JTextField(10);
+        JButton crearButton = new JButton("Crear");
+
+        // Agregar un listener al botón crear
+        crearButton.addActionListener(e -> {
+        // Obtener los datos del panel
+        String nombre = nombreField.getText();
+        boolean vacunas = vacunasCheck.isSelected();
+        double costo = Double.parseDouble(costoField.getText());
+        String pais = paisField.getText();
+        String raza = razaField.getText();
+
+        // Crear un objeto perro con los datos
+        //Perro perro = new Perro(nombre, vacunas, costo, pais, raza);
+
+        // Mostrar la información del perro en una ventana emergente
+        //JOptionPane.showMessageDialog(panel_crear_perro, perro.mostrarInfo(), "Perro creado", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(panel_crear_perro, "Perro creado","perro hecho puto", JOptionPane.INFORMATION_MESSAGE);
+        // Limpiar los campos del panel
+        nombreField.setText("");
+        vacunasCheck.setSelected(false);
+        costoField.setText("");
+        paisField.setText("");
+        razaField.setText("");
+        });
+
+        // Agregar los componentes al panel
+        panel_crear_perro.add(titulo);
+        panel_crear_perro.add(new JLabel(""));
+        panel_crear_perro.add(nombreLabel);
+        panel_crear_perro.add(nombreField);
+        panel_crear_perro.add(vacunasLabel);
+        panel_crear_perro.add(vacunasCheck);
+        panel_crear_perro.add(costoLabel);
+        panel_crear_perro.add(costoField);
+        panel_crear_perro.add(paisLabel);
+        panel_crear_perro.add(paisField);
+        panel_crear_perro.add(razaLabel);
+        panel_crear_perro.add(razaField);
+        panel_crear_perro.add(crearButton);
+
+        // Establecer el tamaño y el layout del panel
+        //panel_crear_perro.setPreferredSize(new Dimension(300, 200));
+
+        // Usar un GridLayout de 5 filas y 2 columnas para el panel
+        panel_crear_perro.setLayout(new GridLayout(7, 1));
+        panel_crear_perro.setBackground(Color.WHITE);
+        panel_crear_perro.setSize(300, 300);
+        panel_crear_perro.setVisible(true);
+        panel_crear_perro.setBounds(200, 0, 300, 300);
+        // Establecer la operación de cierre del JFrame
+        panelBprincipales.add(panel_crear_perro);
+
+    }
+
+    public void crearPanelgato() {
+        // Crear un panel
+        panel_crear_gato = new JPanel();
+
+        // Crear los componentes del panel
+        JLabel titulo = new JLabel("Agregar Gato");
+        titulo.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel nombreLabel = new JLabel("Nombre:");
+        JTextField nombreField = new JTextField(10);
+        JLabel vacunasLabel = new JLabel("Vacunado:");
+        JCheckBox vacunasCheck = new JCheckBox();
+        JLabel costoLabel = new JLabel("Costo:");
+        JTextField costoField = new JTextField(10);
+        JLabel paisLabel = new JLabel("Pais:");
+        JTextField paisField = new JTextField(10);
+        JLabel razaLabel = new JLabel("Raza:");
+        JTextField razaField = new JTextField(10);
+        JButton crearButton = new JButton("Crear");
+
+        // Agregar un listener al botón crear
+        crearButton.addActionListener(e -> {
+            // Obtener los datos del panel
+            String nombre = nombreField.getText();
+            boolean vacunas = vacunasCheck.isSelected();
+            double costo = Double.parseDouble(costoField.getText());
+            String pais = paisField.getText();
+            String raza = razaField.getText();
+
+            // Crear un objeto perro con los datos
+            Perro perro = new Perro(nombre, vacunas, costo, pais, raza);
+
+            // Mostrar la información del perro en una ventana emergente
+            JOptionPane.showMessageDialog(panel_crear_gato, perro.mostrarInfo(), "Perro creado", JOptionPane.INFORMATION_MESSAGE);
+
+            // Limpiar los campos del panel
+            nombreField.setText("");
+            vacunasCheck.setSelected(false);
+            costoField.setText("");
+            paisField.setText("");
+            razaField.setText("");
+        });
+
+        // Agregar los componentes al panel
+        panel_crear_gato.add(titulo);
+        panel_crear_gato.add(new JLabel(""));
+        panel_crear_gato.add(nombreLabel);
+        panel_crear_gato.add(nombreField);
+        panel_crear_gato.add(vacunasLabel);
+        panel_crear_gato.add(vacunasCheck);
+        panel_crear_gato.add(costoLabel);
+        panel_crear_gato.add(costoField);
+        panel_crear_gato.add(paisLabel);
+        panel_crear_gato.add(paisField);
+        panel_crear_gato.add(razaLabel);
+        panel_crear_gato.add(razaField);
+        panel_crear_gato.add(crearButton);
+
+        // Establecer el tamaño y el layout del panel
+        panel_crear_gato.setLayout(new GridLayout(7, 1));
+        panel_crear_gato.setBackground(Color.WHITE);
+        panel_crear_gato.setSize(300, 300);
+        panel_crear_gato.setVisible(false);
+        panel_crear_gato.setBounds(200, 0, 300, 300);
+
+        panelBprincipales.add(panel_crear_gato);
+    }
+
+
+
+   
+//============================================================================    
+    
+    
+    private void apagarTodo(){
+        panel_crear_gato.setVisible(false);
+        panel_crear_perro.setVisible(false);
+    }
+
+    private void mostrar_crear_gatos(){
+        apagarTodo();
+        panel_crear_gato.setVisible(true);
+        revalidate();
+        repaint();
+    }
+
+    private void mostrar_crear_perro(){
+        apagarTodo();
+        panel_crear_perro.setVisible(true);
+        revalidate();
+        repaint();
+    }
+
+}
+
+
