@@ -3,13 +3,10 @@ package veterinaria_gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Image;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,24 +15,34 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 
-
+import javax.swing.JList; 
+import javax.swing.DefaultListModel;
 
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import javax.swing.ListCellRenderer;
+
+
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+
 
 
 
 public class ventana extends JFrame{
-
-
+    private JList<Animal> listaAnimales;
+    private DefaultListModel<Animal> modelo; 
     public JPanel panelBprincipales;
     public JPanel panelBotones;
 
     public JPanel panel_crear_perro;
     public JPanel panel_crear_gato;
+    public JPanel panel_lista_animal;
 
     public JPanel panelLogin;
     public JPanel panelMesas;
@@ -64,14 +71,18 @@ public class ventana extends JFrame{
                 dispose();
             }
         });
+        setVisible(true); //Hacemos visible la ventana
     }    
 
 //============================================================================
     private void iniciarComponentes(){
+        listaAnimales = new JList<>(new DefaultListModel<>());
+        modelo = (DefaultListModel<Animal>) listaAnimales.getModel(); // Asigna el modelo al atributo de la clase
         iniciarPaneles();
         iniciarBotones();
         crearPanelPerro();
         crearPanelgato();
+        crearPanelLista();
 
         
     }
@@ -120,11 +131,11 @@ public class ventana extends JFrame{
 
 
         
-        botonVend.setText("proximamente");
+        botonVend.setText("Lista Animales");
         botonVend.setBounds(20, 100, 100, 30);
         botonVend.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               //llamamos el metodo que creamos para el panel    
+                MostrarLista();
             }
         });
         panelBotones.add(botonVend);
@@ -193,8 +204,8 @@ public class ventana extends JFrame{
         String raza = razaField.getText();
 
         // Crear un objeto perro con los datos
-        //Perro perro = new Perro(nombre, vacunas, costo, pais, raza);
-
+        Perro perro = new Perro(nombre, vacunas, costo, pais, raza);
+        modelo.addElement(perro);
         // Mostrar la información del perro en una ventana emergente
         //JOptionPane.showMessageDialog(panel_crear_perro, perro.mostrarInfo(), "Perro creado", JOptionPane.INFORMATION_MESSAGE);
         JOptionPane.showMessageDialog(panel_crear_perro, "Perro creado","perro hecho puto", JOptionPane.INFORMATION_MESSAGE);
@@ -250,7 +261,7 @@ public class ventana extends JFrame{
         JTextField costoField = new JTextField(10);
         JLabel paisLabel = new JLabel("Pais:");
         JTextField paisField = new JTextField(10);
-        JLabel razaLabel = new JLabel("Raza:");
+        JLabel colorLabel = new JLabel("Color:");
         JTextField razaField = new JTextField(10);
         JButton crearButton = new JButton("Crear");
 
@@ -261,13 +272,13 @@ public class ventana extends JFrame{
             boolean vacunas = vacunasCheck.isSelected();
             double costo = Double.parseDouble(costoField.getText());
             String pais = paisField.getText();
-            String raza = razaField.getText();
+            String color = colorLabel.getText();
 
             // Crear un objeto perro con los datos
-            Perro perro = new Perro(nombre, vacunas, costo, pais, raza);
-
+            Gato gatoNuevo = new Gato(nombre, vacunas, costo, pais, color);
+            modelo.addElement(gatoNuevo); // Agrega el elemento
             // Mostrar la información del perro en una ventana emergente
-            JOptionPane.showMessageDialog(panel_crear_gato, perro.mostrarInfo(), "Perro creado", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(panel_crear_gato, gatoNuevo.mostrarInfo(), "Gato creado", JOptionPane.INFORMATION_MESSAGE);
 
             // Limpiar los campos del panel
             nombreField.setText("");
@@ -288,7 +299,7 @@ public class ventana extends JFrame{
         panel_crear_gato.add(costoField);
         panel_crear_gato.add(paisLabel);
         panel_crear_gato.add(paisField);
-        panel_crear_gato.add(razaLabel);
+        panel_crear_gato.add(colorLabel);
         panel_crear_gato.add(razaField);
         panel_crear_gato.add(crearButton);
 
@@ -302,7 +313,177 @@ public class ventana extends JFrame{
         panelBprincipales.add(panel_crear_gato);
     }
 
+    public void crearPanelLista() {
+        // Inicializar el JList con un modelo de lista que contenga los animales
+        //listaAnimales = new JList<>(new DefaultListModel<>());
+        // Agregar un renderizador personalizado al JList para que muestre el nombre y el tipo de animal
+        listaAnimales.setCellRenderer(new AnimalRenderer());
 
+        // Crear un panel y agregar el JList al panel
+        panel_lista_animal = new JPanel();
+
+        // Crear un botón de modificar
+        JButton botonModificar = new JButton("Modificar");
+
+        // Agregar un escuchador de eventos al botón para que se ejecute una acción cuando se haga clic en él
+        botonModificar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener el objeto seleccionado en el JList y verificar que no sea nulo
+                Animal animal = listaAnimales.getSelectedValue();
+                if (animal != null) {
+                    // Crear una ventana emergente con campos de texto para ingresar los nuevos datos del objeto
+                    JTextField nombreField = new JTextField(animal.getNombre());
+                    JTextField costoField = new JTextField(String.valueOf(animal.getCosto()));
+                    JTextField paisField = new JTextField(animal.getPais());
+                    JTextField atributoField;
+                    if (animal instanceof Perro) {
+                        atributoField = new JTextField(((Perro) animal).getRaza());
+                    } else {
+                        atributoField = new JTextField(((Gato) animal).getColor());
+                    }
+                    Object[] campos = {
+                            "Nombre:", nombreField,
+                            "Costo:", costoField,
+                            "Pais:", paisField,
+                            animal instanceof Perro ? "Raza:" : "Color:", atributoField
+                    };
+                    int opcion = JOptionPane.showConfirmDialog(null, campos, "Modificar animal", JOptionPane.OK_CANCEL_OPTION);
+                    // Si se presiona el botón OK, asignar los nuevos datos al objeto y actualizar el modelo de la lista
+                    if (opcion == JOptionPane.OK_OPTION) {
+                        animal.setNombre(nombreField.getText());
+                        animal.setCosto(Double.parseDouble(costoField.getText()));
+                        animal.setPais(paisField.getText());
+                        if (animal instanceof Perro) {
+                            ((Perro) animal).setRaza(atributoField.getText());
+                        } else {
+                            ((Gato) animal).setColor(atributoField.getText());
+                        }
+                        listaAnimales.repaint();
+                    }
+                }
+            }
+        });
+
+        // Crear un botón con un texto que indique la acción de eliminar
+        JButton botonEliminar = new JButton("Eliminar");
+
+        // Agregar un escuchador de eventos al botón para que se ejecute una acción cuando se haga clic en él
+        botonEliminar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener el objeto seleccionado en el JList y verificar que no sea nulo
+                Animal animal = listaAnimales.getSelectedValue();
+                if (animal != null) {
+                    // Eliminar el objeto del modelo de la lista
+                    DefaultListModel<Animal> modelo = (DefaultListModel<Animal>) listaAnimales.getModel();
+                    modelo.removeElement(animal);
+                }
+            }
+        });
+
+        // Crear una caja de texto con un texto vacío
+        JTextField campoBuscar = new JTextField();
+        campoBuscar.setSize(100, 300);
+        campoBuscar.setPreferredSize(new Dimension(80, 50));
+        // Crear un botón con un texto que indique la acción de buscar
+        JButton botonBuscar = new JButton("Buscar");
+        botonBuscar.setPreferredSize(new Dimension(80, 50));
+        // Agregar un escuchador de eventos al botón para que se ejecute una acción cuando se haga clic en él
+        botonBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener el texto de la caja de texto y verificar que no sea vacío
+                String nombre = campoBuscar.getText();
+                if (!nombre.isEmpty()) {
+                    // Recorrer el modelo de la lista y comparar el nombre de cada animal con el texto de la caja de texto
+                    DefaultListModel<Animal> modelo = (DefaultListModel<Animal>) listaAnimales.getModel();
+                    boolean encontrado = false;
+                    for (int i = 0; i < modelo.getSize(); i++) {
+                        Animal animal = modelo.getElementAt(i);
+                        if (animal.getNombre().equals(nombre)) {
+                            // Si se encuentra una coincidencia, seleccionar el animal en el JList y mostrar un mensaje de éxito
+                            listaAnimales.setSelectedIndex(i);
+                            JOptionPane.showMessageDialog(null, "Animal encontrado: " + animal.mostrarInfo());
+                            encontrado = true;
+                            break;
+                        }
+                    }
+                    if (!encontrado) {
+                        // Si no se encuentra ninguna coincidencia, mostrar un mensaje de error
+                        JOptionPane.showMessageDialog(null, "No se encontró ningún animal con ese nombre.");
+                    }
+                }
+            }
+        });
+        
+        
+        // Agregar la caja de texto y el botón al panel
+        // Crear un GridLayout con dos filas y una columna
+
+
+
+
+        // Crear un panel principal y agregar el JList al panel
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new FlowLayout());
+        panelPrincipal.setSize(100, 100);
+        panelPrincipal.setVisible(true);
+        
+        panelPrincipal.add(campoBuscar);
+        panelPrincipal.add(botonBuscar);
+
+        JPanel panel_eliminar_modificar = new JPanel();
+        panel_eliminar_modificar.setLayout(new BorderLayout());
+        // Agregar el panel al GridLayout
+        // Agregar el panel secundario y la lista al panel principal
+        
+        panel_eliminar_modificar.add(botonEliminar,BorderLayout.WEST);
+        panel_eliminar_modificar.add(botonModificar,BorderLayout.EAST);
+
+        //panel_lista_animal.setLayout( new BorderLayout());
+        panel_lista_animal.setLayout(new BorderLayout());
+
+        // Configurar el tamaño y la ubicación del panel
+        panel_lista_animal.setSize(450, 400);
+        //panel_lista_animal.setPreferredSize(new Dimension(500, 500));
+        panel_lista_animal.setBounds(200, 0, 450, 400);
+        panel_lista_animal.setVisible(false);
+        // Agregar el panel al JFrame y hacerlo visible
+        
+        panel_lista_animal.add(panelPrincipal,BorderLayout.NORTH);
+        panel_lista_animal.add(listaAnimales,BorderLayout.CENTER);
+        panel_lista_animal.add(panel_eliminar_modificar,BorderLayout.SOUTH);
+        //panel_crear_gato.setLayout(new GridLayout(7, 1));
+        //panel_crear_gato.setBackground(Color.WHITE);
+        //panel_crear_gato.setSize(300, 300);
+        //panel_crear_gato.setVisible(false);
+        //panel_crear_gato.setBounds(200, 0, 300, 300);
+
+        panelBprincipales.add(panel_lista_animal);  
+    }
+     
+    // Clase interna que implementa la interfaz ListCellRenderer
+    private class AnimalRenderer implements ListCellRenderer<Animal> {
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends Animal> list, Animal value, int index,boolean isSelected, boolean cellHasFocus) {
+            // Crear un JLabel con el nombre y el tipo de animal
+            JLabel label = new JLabel(value.getNombre() + " (" + value.getClass().getSimpleName() + ")");
+            label.setOpaque(true);
+
+            // Cambiar el color del fondo y del texto según si el elemento está seleccionado o no
+            if (isSelected) {
+                label.setBackground(list.getSelectionBackground());
+                label.setForeground(list.getSelectionForeground());
+            } else {
+                label.setBackground(list.getBackground());
+                label.setForeground(list.getForeground());
+            }
+
+            return label;
+        }
+    }
 
    
 //============================================================================    
@@ -311,6 +492,7 @@ public class ventana extends JFrame{
     private void apagarTodo(){
         panel_crear_gato.setVisible(false);
         panel_crear_perro.setVisible(false);
+        panel_lista_animal.setVisible(false);
     }
 
     private void mostrar_crear_gatos(){
@@ -326,7 +508,12 @@ public class ventana extends JFrame{
         revalidate();
         repaint();
     }
-
+    private void MostrarLista(){
+        apagarTodo();
+        panel_lista_animal.setVisible(true);
+        revalidate();
+        repaint();
+    }
 }
 
 
