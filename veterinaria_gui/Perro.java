@@ -1,4 +1,3 @@
-
 package veterinaria_gui;
 // Clase hija Perro
 public class Perro extends Animal {
