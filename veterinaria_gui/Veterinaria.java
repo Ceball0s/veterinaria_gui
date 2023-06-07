@@ -150,7 +150,7 @@ public class Veterinaria {
             System.out.println("5. Listar todas las mascotas");
             System.out.println("6. Salir");
             opcion = sc.nextInt();
-            switch (opcion) {
+            switch (opcion) {//
                 case 1:
                     agregarMascota();
                     break;
